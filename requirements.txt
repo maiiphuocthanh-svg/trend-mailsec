@@ -1,0 +1,5 @@
+# Script chinh KHONG can thu vien ben ngoai (chi dung thu vien chuan Python).
+# Cai goi duoi day CHI khi ban muon tao file ZIP CO MA HOA (AES) that su
+# cho test case #7 (file co mat khau). Neu khong cai, script van chay nhung
+# tao ZIP khong ma hoa.
+pyzipper>=0.3.6
