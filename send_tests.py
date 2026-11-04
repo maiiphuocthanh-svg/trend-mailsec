@@ -3,7 +3,7 @@
 send_tests.py
 =============
 Bo cong cu gui 10 loai email TEST toi mailbox dich de kiem thu
-Trend Micro Cloud App Security (CAS).
+Trend Micro Cloud Email Gateway Protection (CEGP).
 
 Su dung cac mau test CHUAN, VO HAI (EICAR, GTUBE). KHONG tao ma doc that.
 
@@ -335,10 +335,10 @@ def main():
     send_via_smtp(cfg, messages)
 
     print("\n" + "=" * 60)
-    print("[HOAN TAT] Da gui xong. Kiem tra ket qua tren CAS Console:")
-    print("  - Quarantine  : Logs > Quarantine Query")
-    print("  - Detection   : Logs > Security Risk / Virtual Analyzer")
-    print("  - Dashboard   : Dashboard > Threat Overview")
+    print("[HOAN TAT] Da gui xong. Kiem tra ket qua tren CEGP Console:")
+    print("  - Quarantine  : menu Quarantine")
+    print("  - Log/Tracking: xem log mail trong CEGP (Mail Tracking / Policy Events)")
+    print("  - Dashboard   : menu Dashboard")
     print("=" * 60 + "\n")
 
 

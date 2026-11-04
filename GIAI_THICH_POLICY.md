@@ -11,17 +11,26 @@ Tài liệu giải thích **từng tùy chọn cấu hình** bên trong mỗi po
 
 ## 🔹 TC1 — Spam Filtering
 
-**Đường dẫn:** `Inbound Protection > Spam Filtering`
+**Đường dẫn:** `Inbound Protection > Spam Filtering > Spam Policy > Edit Rule`
 
-### Giải thích từng tùy chọn
+Rule gồm 4 tab: `Basic Information` → `Recipients and Senders` → `Scanning Criteria` → `Actions`.
+
+### Tab Scanning Criteria (theo màn hình thực tế)
 
 | Tùy chọn | Giải thích chi tiết |
 |----------|---------------------|
-| **Enable spam detection** | Công tắc bật/tắt lọc spam cho policy này. Phải bật để TC1 chạy. |
-| **Spam catch rate** | Độ nhạy bắt spam, 4 mức: **High / Medium / Low / Lowest**. Mức càng cao bắt càng nhiều spam nhưng tăng nguy cơ **false positive** (bắt nhầm mail thật). Khuyến nghị bắt đầu ở **Medium** rồi tinh chỉnh. |
-| **Graymail detection** | "Graymail" = mail nằm giữa spam và mail hợp lệ (bản tin quảng cáo, newsletter, mail marketing mà bạn từng đăng ký). Có thể xử lý **riêng** với graymail (vd chỉ gắn nhãn thay vì cách ly). |
-| **Approved Senders** (mức policy) | Danh sách địa chỉ/domain được tin tưởng — **bỏ qua** kiểm tra spam heuristic. |
-| **Blocked Senders** (mức policy) | Danh sách bị chặn thẳng. |
+| **Spam** + dropdown **Level** | Bật phát hiện spam. **Level** là độ nhạy (ví dụ "Moderately low"). Level càng nhạy càng bắt nhiều spam nhưng càng dễ bắt nhầm mail thật (false positive). Chuỗi GTUBE là mẫu spam chuẩn nên thường bị bắt ở mọi mức. |
+| **Business Email Compromise (BEC)** + link **High Profile Users** | Chống giả mạo lãnh đạo. Khai báo người quan trọng (CEO, CFO...) trong *High Profile Users*. Có 3 cách áp dụng rule (chọn 1): (1) *Detected as BEC attacks by Antispam Engine*: chỉ khi engine xác định là BEC. (2) *Detected as BEC attacks by writing style analysis*: phân tích văn phong. (3) *BEC attacks suspected by Antispam Engine*: bắt cả mail nghi ngờ, nhạy hơn nhưng dễ bắt nhầm hơn. |
+| **Phishing and other suspicious content** | Phát hiện email lừa đảo và nội dung đáng ngờ. **Đây là mục chính cho TC4.** |
+| **Graymail** (có link cấu hình) | Mail vùng xám: newsletter, quảng cáo, mail marketing hàng loạt. Có thể xử lý nhẹ hơn spam. |
+| **Web reputation** (có link cấu hình) | Kiểm tra danh tiếng URL/domain trong mail lúc nhận. Bổ trợ cho TC8. |
+| **Social engineering attack** | Phát hiện mail thao túng tâm lý (khẩn cấp, đe dọa, dụ hành động vội). |
+| **Unusual signal** | Phát hiện tín hiệu bất thường. Là lớp bổ sung, có thể tăng false positive. |
+
+> 📌 Tên và mô tả chính xác từng mục *Level* bạn nên mở dropdown trên Console để đối chiếu, vì tôi chưa xác minh được danh sách đầy đủ các mức từ tài liệu chính thức.
+
+### Tab Recipients and Senders
+Chọn rule áp dụng cho người nhận nào và loại trừ sender nào. Muốn test thì để áp dụng cho mailbox đích `opmanager@pocmail.fecredit.com.vn` hoặc domain của bạn.
 
 ### Actions (hành động khi phát hiện spam)
 

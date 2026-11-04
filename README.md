@@ -1,167 +1,71 @@
-# Bộ Script Test Trend Micro Cloud App Security (CAS)
+# Bộ Test Trend Micro Cloud Email Gateway Protection (CEGP)
 
-Công cụ gửi **10 loại email test** qua **Gmail SMTP** tới mailbox đích để kiểm thử các tính năng bảo mật của **Trend Micro Cloud App Security**.
+Tài liệu kiểm thử 10 tính năng bảo mật email trên **Cloud Email Gateway Protection (CEGP)**, thuộc TrendAI Vision One.
 
-> ⚠️ **An toàn:** Bộ script dùng các mẫu test **chuẩn công nghiệp, hoàn toàn vô hại** — **EICAR** (file test antivirus chuẩn) và **GTUBE** (chuỗi test spam chuẩn). **Không** chứa mã độc thật hay link phishing thật. Đây là các mẫu được chính Trend Micro và mọi hãng AV công nhận để kiểm tra chức năng phát hiện.
+> ⚠️ **An toàn:** chỉ dùng mẫu test chuẩn, vô hại: **EICAR** (file test antivirus) và **GTUBE** (chuỗi test spam). Không dùng mã độc thật.
+
+CEGP là **gateway inline**: mail đi qua CEGP (qua MX) rồi mới tới hộp thư. Menu chính: `Dashboard`, `Domains`, `Inbound Protection`, `Outbound Protection`, `Quarantine`.
 
 ---
 
-## 📁 Cấu trúc file
+## 📁 Các file trong repo
 
 | File | Mô tả |
 |------|-------|
-| `send_tests.py` | Script chính — gửi email test |
-| `payloads.py` | Chứa các mẫu test chuẩn (EICAR, GTUBE...) |
-| `config.ini` | **File cấu hình — bạn cần sửa trước khi chạy** |
-| `requirements.txt` | Thư viện tùy chọn (chỉ cho ZIP mã hóa) |
-| `README.md` | File hướng dẫn này |
+| `GIAI_THICH_POLICY.md` | Giải thích từng policy trên CEGP theo test case |
+| `payloads.py` | Chuỗi EICAR, GTUBE để copy |
+| `send_tests.py`, `config.ini`, `requirements.txt` | Script Python gửi mail tự động (**tùy chọn**, chỉ dùng được nếu máy cài được Python) |
+
+> Máy bị GPO chặn cài Python thì dùng cách **thủ công** bên dưới, không cần script.
 
 ---
 
-## 🪟 Hướng dẫn chạy trên Windows
+## ✋ Cách làm thủ công (không cần cài gì)
 
-### Bước 1 — Cài Python
+### Mẫu dùng để gửi
 
-1. Tải Python 3.8+ tại https://www.python.org/downloads/
-2. Khi cài, **tích vào ô `Add Python to PATH`**.
-3. Mở **Command Prompt** (gõ `cmd` ở Start Menu), kiểm tra:
-   ```cmd
-   python --version
-   ```
-
-### Bước 2 — Lấy Gmail App Password (BẮT BUỘC)
-
-Gmail **không** cho dùng mật khẩu thường để gửi qua SMTP. Phải tạo **App Password**:
-
-1. Bật **Xác minh 2 bước (2-Step Verification)** cho tài khoản Gmail:
-   https://myaccount.google.com/security
-2. Vào trang App Passwords: https://myaccount.google.com/apppasswords
-3. Đặt tên bất kỳ (vd: `CAS Test`) → bấm **Create**.
-4. Google hiển thị **16 ký tự** (dạng `abcd efgh ijkl mnop`).
-5. Copy 16 ký tự này (**bỏ dấu cách** khi dán vào config).
-
-### Bước 3 — Cấu hình `config.ini`
-
-Mở file `config.ini` bằng Notepad, sửa các dòng:
-
-```ini
-[smtp]
-username = your_gmail@gmail.com        ; Gmail dùng để GỬI
-app_password = abcdefghijklmnop        ; App Password 16 ký tự (bỏ dấu cách)
-
-[recipient]
-to = opmanager@pocmail.fecredit.com.vn ; Mailbox ĐÍCH (được CAS bảo vệ)
+**GTUBE (TC1 - Spam):** dán nguyên chuỗi sau vào nội dung mail (một dòng, không xuống dòng):
+```
+XJS*C4JDBQADN1.NSBN3*2IDNEN*GTUBE-STANDARD-ANTI-UBE-TEST-EMAIL*C.34X
 ```
 
-### Bước 4 — (Tùy chọn) Cài thư viện cho ZIP mã hóa
-
-Chỉ cần nếu muốn test file nén **mã hóa thật** (test case #7):
-```cmd
-pip install pyzipper
+**EICAR (TC2, TC5, TC7 - Virus):** tạo file bằng Notepad, dán nguyên một dòng sau, lưu thành `eicar.com` (hoặc `eicar.txt`):
 ```
-Nếu bỏ qua, script vẫn chạy nhưng tạo ZIP không mã hóa.
-
-### Bước 5 — Chạy script
-
-Mở Command Prompt tại thư mục chứa script:
-```cmd
-cd đường\dẫn\tới\thư-mục
+X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*
 ```
+Antivirus trên máy có thể xóa file này ngay khi tạo. Nếu vậy, hãy tạm thêm thư mục đó vào exclusion hoặc nhờ bộ phận IT hỗ trợ.
 
-| Lệnh | Tác dụng |
-|------|----------|
-| `python send_tests.py` | Gửi **tất cả** test case tự động (1,2,3,4,5,7,8) |
-| `python send_tests.py 1 2 4` | Chỉ gửi test case **1, 2, 4** |
-| `python send_tests.py --list` | Liệt kê danh sách test case |
-| `python send_tests.py --help` | Xem hướng dẫn lệnh |
+### Gửi mail
+Soạn mail bằng Outlook hoặc webmail, gửi tới mailbox đích `opmanager@pocmail.fecredit.com.vn`.
 
 ---
 
-## 🧪 Chi tiết 10 Test Case
+## 🧪 10 test case: cấu hình, cách gửi, nơi kiểm tra
 
-| # | Tên | Loại | Payload gửi đi | Kiểm tra kết quả trên Console |
-|---|-----|------|----------------|-------------------------------|
-| 1 | **Spam Filtering** | 🤖 Tự động | Email chứa chuỗi **GTUBE** | `Logs > Quarantine Query` → Reason = Spam |
-| 2 | **Virus Scan** | 🤖 Tự động | Đính kèm file **EICAR** (`eicar.com`) | `Logs > Security Risk` → phát hiện virus |
-| 3 | **Content Filtering** | 🤖 Tự động | Đính kèm file ~12MB | Policy dung lượng → Block/Quarantine kèm lý do |
-| 4 | **Phishing Filtering** | 🤖 Tự động | Giả mạo `From` + nội dung lừa đảo mẫu | `Logs` → Reason = Phish / Spoofing |
-| 5 | **Sandboxing** | 🤖 Tự động | File high-risk (EICAR trong ZIP) | `Logs > Virtual Analyzer` → kết quả phân tích |
-| 6 | **Whitelist/Blacklist** | ✋ Thủ công | *Xem hướng dẫn bên dưới* | Theo chính sách allow/block |
-| 7 | **Password file** | 🤖 Tự động | ZIP có mật khẩu + EICAR, mật khẩu ghi trong body | Hệ thống bóc mật khẩu → quét → phát hiện EICAR |
-| 8 | **Time-of-Click** | 🤖 Tự động | Email chứa URL test | URL được rewrite; click → trang cảnh báo |
-| 9 | **Dashboard** | ✋ Thủ công | *Xem hướng dẫn bên dưới* | `Dashboard` hiển thị biểu đồ & top threats |
-| 10 | **Report** | ✋ Thủ công | *Xem hướng dẫn bên dưới* | Xuất & lên lịch gửi báo cáo |
+Chi tiết từng option của policy xem trong `GIAI_THICH_POLICY.md`.
 
----
+| # | Test case | Cấu hình trên CEGP | Cách gửi mail test | Kiểm tra |
+|---|-----------|--------------------|--------------------|----------|
+| 1 | Spam | `Inbound Protection > Spam Filtering > Spam Policy`: bật **Spam**, Actions = Quarantine | Dán chuỗi GTUBE vào body | `Quarantine`: Reason = Spam |
+| 2 | Virus | `Inbound Protection > Virus Scan`: bật rule, action Delete attachment hoặc Quarantine, bật notification | Đính kèm file EICAR | `Quarantine` / log: phát hiện virus |
+| 3 | Content Filtering | `Inbound Protection > Content Filtering`: rule theo size, true file type, file nén, file mã hóa | Gửi file lớn hơn ngưỡng, file nén, file mã hóa | Mail bị chặn/cách ly kèm lý do |
+| 4 | Phishing | Spam Policy: bật **Phishing and other suspicious content**, BEC, Social engineering attack | Mail giả From + nội dung lừa đảo + link giả | `Quarantine`: lý do phishing/BEC |
+| 5 | Sandboxing | Bật Virtual Analyzer nếu có trong menu `Inbound Protection` (cần license) | Gửi file high-risk | Báo cáo phân tích sandbox |
+| 6 | Whitelist/Blacklist | `Inbound Protection > Connection Filtering` (Sender Filter, IP Reputation) | Gửi mail từ sender/IP đã thêm vào danh sách | Blocked: bị chặn. Approved: mail đi qua |
+| 7 | File password | `Inbound Protection > Virus Scan > File Password Analysis`: bật, timeout 5 phút | ZIP có mật khẩu chứa EICAR, ghi mật khẩu trong body | Mail bị bắt do EICAR bên trong |
+| 8 | Time-of-Click | Bật Time-of-Click Protection trong Spam Policy | Mail chứa URL | URL bị rewrite, click link độc sẽ ra trang cảnh báo |
+| 9 | Dashboard | `Dashboard` | Không cần gửi thêm | Biểu đồ traffic, top threats, log |
+| 10 | Report | Mục báo cáo trên Console | Không cần gửi thêm | Xuất report, lên lịch gửi cho Admin |
 
-## ✋ Hướng dẫn các Test Case thủ công
-
-Các test này **không gửi mail tự động** vì phụ thuộc vào cấu hình/thao tác trên Console.
-
-### #6 — Whitelist / Blacklist (IP hoặc Geo-IP)
-
-CAS dùng **Approved/Blocked Senders** và **Sender Filtering**.
-
-**Test Blacklist (chặn):**
-1. Trên Console: `Advanced Threat Protection` / `Policy` → thêm địa chỉ/domain gửi test vào **Blocked Senders** (hoặc chặn theo quốc gia nếu bản có Geo-IP).
-2. Chạy: `python send_tests.py 1` (gửi 1 mail bất kỳ từ địa chỉ đã chặn).
-3. **Kỳ vọng:** mail bị chặn/cách ly theo rule blacklist.
-
-**Test Whitelist (cho phép):**
-1. Thêm địa chỉ Gmail gửi vào **Approved Senders**.
-2. Chạy lại test spam `python send_tests.py 1`.
-3. **Kỳ vọng:** mail được cho qua dù trùng mẫu spam (tùy mức ưu tiên policy).
-
-> 💡 Để test theo **IP/Quốc gia**, cấu hình trong phần Sender Filtering / IP Reputation. Gmail dùng dải IP của Google nên muốn test IP cụ thể bạn nên gửi từ relay/IP mà bạn kiểm soát.
-
-### #9 — Dashboard & Threat Visibility
-
-1. Sau khi chạy các test #1–#8 và đợi vài phút để CAS xử lý.
-2. Trên Console: `Dashboard`.
-3. **Kỳ vọng:** thấy biểu đồ lưu lượng mail, widget **Top Threats** (Spam/Virus/Phishing tăng), và log sự kiện chi tiết.
-
-### #10 — Report Generation & Scheduling
-
-1. Trên Console: `Reports`.
-2. **Xuất thủ công:** `Generate Report` → chọn khoảng thời gian → export PDF/CSV.
-3. **Lên lịch:** `Scheduled Reports` → tạo lịch Daily/Weekly/Monthly → nhập email Administrator nhận báo cáo.
-4. **Kỳ vọng:** báo cáo tổng quan/chi tiết được tạo và gửi định kỳ qua email.
+> Tên menu con có thể khác đôi chút tùy phiên bản/license (đặc biệt TC5 và Geo-IP của TC6). Nếu không thấy menu, hãy kiểm tra license hoặc mở menu `Inbound Protection` để đối chiếu.
 
 ---
 
-## 🔍 Kiểm tra kết quả nhanh
+## ⚙️ (Tùy chọn) Dùng script Python
 
-Sau khi chạy, vào **CAS Console**:
+Chỉ khi máy cài được Python 3.8+:
+1. Tạo Gmail **App Password** (bật 2FA, vào https://myaccount.google.com/apppasswords).
+2. Sửa `config.ini`: `username`, `app_password`, `to`.
+3. Chạy `python send_tests.py` (tất cả) hoặc `python send_tests.py 1 2 4` (chọn case).
 
-- **Quarantine:** `Logs > Quarantine Query` — xem các mail bị cách ly (giống ảnh bạn gửi, cột `Reason` và `Rule`).
-- **Security Risk:** `Logs > Security Risk Scan` — virus/malware.
-- **Virtual Analyzer:** `Logs > Virtual Analyzer` — kết quả sandbox.
-- **Dashboard:** tổng quan threats.
-
----
-
-## ❓ Khắc phục sự cố
-
-| Lỗi | Nguyên nhân & cách sửa |
-|-----|------------------------|
-| `SMTPAuthenticationError` | Chưa bật 2FA hoặc dùng sai App Password. Tạo lại App Password. |
-| `python không được nhận diện` | Chưa cài Python hoặc chưa Add to PATH. Cài lại và tích ô PATH. |
-| Mail virus/content bị **chính Gmail** chặn trước khi gửi | Gmail có thể từ chối gửi EICAR/file lớn. Xem mục dưới. |
-| Không thấy mail trong Quarantine | Đợi vài phút (CAS quét post-delivery); kiểm tra đúng mailbox đích. |
-
-> ⚠️ **Lưu ý về Gmail:** Gmail có thể **tự chặn** việc GỬI file EICAR hoặc file quá lớn từ phía nó (trước khi tới CAS). Nếu gặp tình huống này, bạn nên gửi từ một **SMTP relay nội bộ** hoặc tài khoản M365 mà bạn kiểm soát, thay vì Gmail. Script được viết sẵn để dễ đổi `host/port/username` trong `config.ini`.
-
----
-
-## 📌 Tóm tắt lệnh nhanh
-
-```cmd
-:: Xem danh sách
-python send_tests.py --list
-
-:: Gửi tất cả test tự động
-python send_tests.py
-
-:: Gửi riêng test virus + spam
-python send_tests.py 1 2
-```
+Gmail có thể tự chặn việc gửi EICAR hoặc file lớn trước khi tới CEGP. Khi đó hãy gửi từ máy chủ mail khác (M365 hoặc relay nội bộ).
