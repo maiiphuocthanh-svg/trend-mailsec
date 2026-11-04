@@ -286,7 +286,7 @@ def print_list():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Gui email test cho Trend Micro Cloud App Security.",
+        description="Gui email test cho Trend Micro Cloud Email Gateway Protection (CEGP).",
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("cases", nargs="*", type=int,
                         help="So thu tu test case can chay (vd: 1 2 4). "
