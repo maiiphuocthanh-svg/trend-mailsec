@@ -12,6 +12,7 @@ CEGP là **gateway inline**: mail đi qua CEGP (qua MX) rồi mới tới hộp 
 
 | File | Mô tả |
 |------|-------|
+| `HUONG_DAN_THU_CONG.md` | **Hướng dẫn từng bước cho 10 test case** (cấu hình, gửi mail, kiểm tra, bảng ghi kết quả) |
 | `GIAI_THICH_POLICY.md` | Giải thích từng policy trên CEGP theo test case |
 | `payloads.py` | Chuỗi EICAR, GTUBE để copy |
 | `send_tests.py`, `config.ini`, `requirements.txt` | Script Python gửi mail tự động (**tùy chọn**, chỉ dùng được nếu máy cài được Python) |
